@@ -10,7 +10,7 @@ var CACHED_URLS = [
   // JavaScript
     'material.js',
   // Images
-    'appimages/paddy.jpg'
+    'paddy.jpg',
 ];
 
 self.addEventListener('install', function(event) {
