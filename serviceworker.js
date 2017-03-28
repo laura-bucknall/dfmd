@@ -11,6 +11,7 @@ var CACHED_URLS = [
     'material.js',
   // Images
     'paddy.jpg',
+    'eventsimage/example-01.jpg'
 ];
 
 self.addEventListener('install', function(event) {
