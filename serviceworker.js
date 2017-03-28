@@ -4,6 +4,7 @@ var CACHED_URLS = [
   'first.html',
   // Stylesheets and fonts
     'styles.css',
+    'mystyles.css',
     'min-style.css',
     'https://fonts.googleapis.com/icon?family=Material+Icons',
     'https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&lang=en',
