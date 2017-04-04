@@ -1,5 +1,8 @@
 var BASE_PATH = '/dfmd/';
 var CACHE_NAME = 'gih-cache-v8';
+var TEMP_IMAGE_CACHE_NAME = 'temp-cache-v1';
+var newsAPIJSON = "https://newsapi.org/v1/articles?source=bbc-news&apiKey=577a4a09fd2a424eadf445c39bdab3c2";
+
 var CACHED_URLS = [
     // Our HTML
     BASE_PATH + 'first.html',
@@ -37,8 +40,11 @@ var CACHED_URLS = [
     BASE_PATH + 'min-style.css',
     BASE_PATH + 'styles.css',
     BASE_PATH + 'appimages/event-default.png',
-    BASE_PATH + 'scripts.js',
-    BASE_PATH + 'events.json'
+    BASE_PATH + 'scripts_v2.js',
+    BASE_PATH + 'events.json',
+    BASE_PATH + 'second.html',
+    BASE_PATH + 'appimages/news-default.jpg'
+
 
 ];
 
@@ -79,12 +85,24 @@ self.addEventListener('fetch', function(event) {
       })
     );
       
-      // Handle requests for events JSON file
+     // Handle requests for events JSON file
   } else if (requestURL.pathname === BASE_PATH + 'events.json') {
     event.respondWith(
       caches.open(CACHE_NAME).then(function(cache) {
         return fetch(event.request).then(function(networkResponse) {
           cache.put(event.request, networkResponse.clone());
+          return networkResponse;
+        }).catch(function() {
+          return caches.match(event.request);
+        });
+      })
+    );
+  } else if (requestURL.href === newsAPIJSON) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(function(cache) {
+        return fetch(event.request).then(function(networkResponse) {
+          cache.put(event.request, networkResponse.clone());
+          caches.delete(TEMP_IMAGE_CACHE_NAME);
           return networkResponse;
         }).catch(function() {
           return caches.match(event.request);
@@ -105,6 +123,21 @@ self.addEventListener('fetch', function(event) {
         });
       })
     );
+  // 
+  } else if (requestURL.href.includes('bbci.co.uk/news/')) {
+    event.respondWith(
+      caches.open(TEMP_IMAGE_CACHE_NAME).then(function(cache) {
+        return cache.match(event.request).then(function(cacheResponse) {
+          return cacheResponse||fetch(event.request, {mode: 'no-cors'}).then(function(networkResponse) {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          }).catch(function() {
+            return cache.match('appimages/news-default.jpg');
+          });
+        });
+      })
+    );
+
       
       
   } else if (
