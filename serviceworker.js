@@ -1,5 +1,5 @@
 var BASE_PATH = '/dfmd/';
-var CACHE_NAME = 'gih-cache-v7';
+var CACHE_NAME = 'gih-cache-v8';
 var CACHED_URLS = [
     // Our HTML
     BASE_PATH + 'first.html',
