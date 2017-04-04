@@ -41,7 +41,7 @@ if(askJack){
             "question": e.target.question.value,
         };
 
-        fetch("https://laura-bucknall.github.io/dfmd/first.html", {mode: "no-cors", method: "POST", body: contact})
+        fetch("https://laura-bucknall.github.io/dfmd/index.html", {mode: "no-cors", method: "POST", body: contact})
             .then(response => {
                 console.log('hello response!', response);
             }).catch(() => {
