@@ -1,5 +1,5 @@
-var BASE_PATH = '/NAMEOF REPRO/';
-var CACHE_NAME = 'gih-cache-v6';
+var BASE_PATH = '/dfmd/';
+var CACHE_NAME = 'gih-cache-v7';
 var CACHED_URLS = [
     // Our HTML
     BASE_PATH + 'first.html',
@@ -26,22 +26,6 @@ var CACHED_URLS = [
     BASE_PATH + 'appimages/ms-icon-144x144.png',
     BASE_PATH + 'appimages/ms-icon-150x150.png',
     BASE_PATH + 'appimages/ms-icon-310x310.png',
-    BASE_PATH + 'eventsimages/example-blog01.jpg',
-    BASE_PATH + 'eventsimages/example-blog02.jpg',
-    BASE_PATH + 'eventsimages/example-blog03.jpg',
-    BASE_PATH + 'eventsimages/example-blog04.jpg',
-    BASE_PATH + 'eventsimages/example-blog05.jpg',
-    BASE_PATH + 'eventsimages/example-blog06.jpg',
-    BASE_PATH + 'eventsimages/example-blog07.jpg',
-    BASE_PATH + 'eventsimages/example-work01.jpg',
-    BASE_PATH + 'eventsimages/example-work02.jpg',
-    BASE_PATH + 'eventsimages/example-work03.jpg',
-    BASE_PATH + 'eventsimages/example-work04.jpg',
-    BASE_PATH + 'eventsimages/example-work05.jpg',
-    BASE_PATH + 'eventsimages/example-work06.jpg',
-    BASE_PATH + 'eventsimages/example-work07.jpg',
-    BASE_PATH + 'eventsimages/example-work08.jpg',
-    BASE_PATH + 'eventsimages/example-work09.jpg',  
     // JavaScript
     BASE_PATH + 'offline-map.js',
     BASE_PATH + 'material.js',
@@ -51,10 +35,14 @@ var CACHED_URLS = [
     'https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&lang=en',
     'https://fonts.googleapis.com/icon?family=Material+Icons',
     BASE_PATH + 'min-style.css',
-    BASE_PATH + 'styles.css'
+    BASE_PATH + 'styles.css',
+    BASE_PATH + 'appimages/event-default.png',
+    BASE_PATH + 'scripts.js',
+    BASE_PATH + 'events.json'
+
 ];
 
-var googleMapsAPIJS = 'https://maps.googleapis.com/maps/api/js?key=YOURKEY&callback=initMap';
+var googleMapsAPIJS = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyC5LF2m0Y_IusdgulkyTl5ISc4pVs-2p1M&callback=initMap';
 
 self.addEventListener('install', function(event) {
   // Cache everything in CACHED_URLS. Installation fails if anything fails to cache
@@ -90,6 +78,35 @@ self.addEventListener('fetch', function(event) {
         return caches.match('offline-map.js');
       })
     );
+      
+      // Handle requests for events JSON file
+  } else if (requestURL.pathname === BASE_PATH + 'events.json') {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(function(cache) {
+        return fetch(event.request).then(function(networkResponse) {
+          cache.put(event.request, networkResponse.clone());
+          return networkResponse;
+        }).catch(function() {
+          return caches.match(event.request);
+        });
+      })
+    );
+  // Handle requests for event images.
+  } else if (requestURL.pathname.includes('/eventsimages/')) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(function(cache) {
+        return cache.match(event.request).then(function(cacheResponse) {
+          return cacheResponse||fetch(event.request).then(function(networkResponse) {
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          }).catch(function() {
+            return cache.match('appimages/event-default.png');
+          });
+        });
+      })
+    );
+      
+      
   } else if (
     CACHED_URLS.includes(requestURL.href) ||
     CACHED_URLS.includes(requestURL.pathname)
